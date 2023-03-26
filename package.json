@@ -20,9 +20,10 @@
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "browser-sync": "^2.26.7",
-    "del": "^5.1.0",
+    "del": "^6.1.0",
     "gulp-babel": "^8.0.0",
     "gulp-imagemin": "^7.0.0",
+    "gulp-load-plugins": "^2.0.8",
     "gulp-sass": "^5.1.0",
     "gulp-swig": "^0.9.1",
     "sass": "^1.60.0"

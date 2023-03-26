@@ -1,8 +1,9 @@
-const { src, dest, parallel } = require('gulp');
+const { src, dest, parallel, series } = require('gulp');
+
+const del = require('del');
+const loadPlugins = require('gulp-load-plugins');
+const plugins = loadPlugins();
 const sass = require('gulp-sass')(require('sass'));
-const babel = require('gulp-babel');
-const swig = require('gulp-swig');
-const imagemin = require('gulp-imagemin');
 
 const data = {
   menus: [
@@ -45,6 +46,10 @@ const data = {
   date: new Date(),
 };
 
+const clean = () => {
+  return del(['dist']);
+};
+
 // SCSS ----> CSS
 const style = () => {
   return src('src/assets/styles/*.scss', { base: 'src' })
@@ -54,22 +59,34 @@ const style = () => {
 // js
 const script = () => {
   return src('src/assets/scripts/*.js', { base: 'src' })
-    .pipe(babel({ presets: ['@babel/preset-env'] }))
+    .pipe(plugins.babel({ presets: ['@babel/preset-env'] }))
     .pipe(dest('dist'));
 };
 // 页面
 const page = () => {
   return src('src/*.html', { base: 'src' })
-    .pipe(swig({ data }))
+    .pipe(plugins.swig({ data }))
     .pipe(dest('dist'));
 };
 
 const image = () => {
   return src('src/assets/images/*', { base: 'src' })
-    .pipe(imagemin())
+    .pipe(plugins.imagemin())
     .pipe(dest('dist'));
 };
 
-const compile = parallel([style, script, page, image]);
+const font = () => {
+  return src('src/assets/fonts/*', { base: 'src' })
+    .pipe(plugins.imagemin())
+    .pipe(dest('dist'));
+};
 
-module.exports = { compile, style, script, page, image };
+const extra = () => {
+  return src('public', { base: 'public' }).pipe(dest('dist'));
+};
+
+const compile = parallel(style, script, page, image, font);
+
+const build = series(clean, parallel(compile, extra));
+
+module.exports = { build, compile };
